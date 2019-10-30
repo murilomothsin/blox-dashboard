@@ -1,9 +1,60 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { Container, Column, Line } from 'UI/Container'
 import { Header, HeaderText, Text, ChartHeader } from 'UI/Header'
 import Chart from "react-apexcharts";
 
 const App = () => {
+
+  const [data, setData] = useState()
+
+  const fetchData = async () => {
+    const response = await fetch('/api/dashboards')
+    const responseJson = await response.json()
+    const labels = ["Quantitativo", "Técnico", "Complementar", "Básico"]
+    const counter = {
+      profile: {
+        title: "Blox por Perfil",
+        data: {
+          1: 0,
+          2: 0,
+          3: 0,
+          4: 0
+        },
+        labels: labels
+      },
+      functional: {
+        title: "Blox por Área Funcional",
+        data: {
+          1: 0,
+          2: 0,
+          3: 0,
+          4: 0
+        },
+        labels: labels
+      },
+      knowledge: {
+        title: "Blox por Área de Competência",
+        data: {
+          1: 0,
+          2: 0,
+          3: 0,
+          4: 0
+        },
+        labels: labels
+      },
+    }
+    responseJson.forEach(elem => {
+      counter.profile.data[elem.blox_profile.id]++
+      counter.functional.data[elem.functional_area.id]++
+      counter.knowledge.data[elem.knowledge_area.id]++
+    })
+    setData(counter)
+  }
+
+  useEffect(() => {
+    fetchData()
+  }, [])
+
   const chartData = {
     options: {
       chart: {
@@ -21,6 +72,37 @@ const App = () => {
       }
     ]
   }
+
+  const titleFormat = title => ({
+    text: title,
+    align: 'center',
+    margin: 10,
+    offsetX: 0,
+    offsetY: 0,
+    floating: false,
+    style: {
+      fontSize: '16px',
+      color: '#263238'
+    }
+  })
+  
+  const renderGraph = (data) => (
+    <Chart
+      options={{
+        labels: data.labels,
+        title: titleFormat(data.title),
+        legend: {
+          position: 'bottom'
+        }
+      }}
+      series={Object.values(data.data)}
+      type="donut"
+    />
+  )
+  if(!data){
+     return null
+  }
+  console.log(data.profile)
   return (
     <Container>
       <Header>
@@ -31,25 +113,13 @@ const App = () => {
       </Header>
       <Line>
         <Column>
-          <Chart
-            options={chartData.options}
-            series={chartData.series}
-            type="donut"
-          />
+          {renderGraph(data.profile)}
         </Column>
         <Column>
-          <Chart
-            options={chartData.options}
-            series={chartData.series}
-            type="donut"
-          />
+          {renderGraph(data.functional)}
         </Column>
         <Column>
-          <Chart
-            options={chartData.options}
-            series={chartData.series}
-            type="donut"
-          />
+          {renderGraph(data.knowledge)}
         </Column>
       </Line>
       <Line>
