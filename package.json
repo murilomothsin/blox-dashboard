@@ -1,0 +1,19 @@
+{
+  "name": "blox-dashboard",
+  "private": true,
+  "dependencies": {
+    "@babel/preset-react": "^7.6.3",
+    "@rails/webpacker": "^4.0.7",
+    "apexcharts": "^3.10.1",
+    "babel-plugin-transform-react-remove-prop-types": "^0.4.24",
+    "prop-types": "^15.7.2",
+    "react": "^16.11.0",
+    "react-apexcharts": "^1.3.3",
+    "react-dom": "^16.11.0",
+    "reakit": "^1.0.0-beta.9",
+    "styled-components": "^4.4.0"
+  },
+  "devDependencies": {
+    "webpack-dev-server": "^3.9.0"
+  }
+}
