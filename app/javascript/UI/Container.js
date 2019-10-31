@@ -14,4 +14,6 @@ export const Line = styled(Box)`
 
 export const Column = styled(Box)`
   flex: 1;
+  padding: 10px;
+  margin: 10px;
 `

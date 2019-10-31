@@ -7,7 +7,15 @@ class Api::DashboardsController < ApplicationController
       { id: 3, name: "Complementar" },
       { id: 4, name: "Básico" }
     ]
-    shifts = ["Matutino", "Noturno"]
+    cycles = [
+      { id: 1, name:  "1. Ciclo" },
+      { id: 2, name:  "2. Ciclo" },
+      { id: 3, name:  "3. Ciclo" },
+    ]
+    shifts = [
+      { id: 1, name: "Matutino" },
+      { id: 2, name: "Noturno" },
+    ]
 
     0.upto(rand(10)).each do |i|
       data << {
@@ -16,11 +24,32 @@ class Api::DashboardsController < ApplicationController
         knowledge_area: options[rand(4)],
         functional_area: options[rand(4)],
         blox_profile: options[rand(4)],
-        cycle: { id: 1, name:  "#{i+1}. Ciclo" },
-        shift: { id: 1, name:  shifts[rand(2)] },
+        cycle: cycles[rand(3)],
+        shift: shifts[rand(2)],
       }
     end
 
     render json: data
+  end
+
+  def stacked
+    render json: {
+      labels: [ "Administração", "Matemática", "Português", "Filosofia" ],
+        series: [
+          {
+            name: "Noturno",
+            data: [rand(10), rand(10), rand(10), rand(10)]
+          },
+          {
+            name: "Matutino",
+            data: [rand(10), rand(10), rand(10), rand(10)]
+          }
+        ],
+        options: {
+          chart: {
+            stacked: true,
+          },
+        }
+    }
   end
 end

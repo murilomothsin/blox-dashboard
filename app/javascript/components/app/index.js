@@ -20,7 +20,19 @@ const App = () => {
           3: 0,
           4: 0
         },
-        labels: labels
+        labels: labels,
+        options: {
+          plotOptions: {
+            pie: {
+              donut: {
+                total: {
+                  show: true,
+                  showAlways: true,
+                }
+              }
+            }
+          }
+        }
       },
       functional: {
         title: "Blox por Área Funcional",
@@ -42,12 +54,16 @@ const App = () => {
         },
         labels: labels
       },
+      stacked: {},
     }
     responseJson.forEach(elem => {
       counter.profile.data[elem.blox_profile.id]++
       counter.functional.data[elem.functional_area.id]++
       counter.knowledge.data[elem.knowledge_area.id]++
     })
+    const responseStacked = await fetch('/api/stacked')
+    counter.stacked = await responseStacked.json()
+
     setData(counter)
   }
 
@@ -67,13 +83,17 @@ const App = () => {
     },
     series: [
       {
-        name: "series-1",
-        data: [30, 40, 45, 50, 49, 60, 70, 91]
+        name: "Noturno",
+        data: []
+      },
+      {
+        name: "Matutino",
+        data: []
       }
     ]
   }
 
-  const titleFormat = title => ({
+  const titleFormat = title => (title ? {
     text: title,
     align: 'center',
     margin: 10,
@@ -84,25 +104,29 @@ const App = () => {
       fontSize: '16px',
       color: '#263238'
     }
-  })
+  } : {})
   
-  const renderGraph = (data) => (
-    <Chart
-      options={{
-        labels: data.labels,
-        title: titleFormat(data.title),
-        legend: {
-          position: 'bottom'
-        }
-      }}
-      series={Object.values(data.data)}
-      type="donut"
-    />
-  )
+  const renderGraph = (data, type = "donut") => {
+    const options = {
+      labels: data.labels,
+      title: titleFormat(data.title),
+      legend: {
+        position: 'bottom'
+      },
+      ...data.options
+    }
+    console.log(options)
+    return (
+      <Chart
+        options={options}
+        series={data.series ? data.series : Object.values(data.data)}
+        type={type}
+      />
+    )
+  }
   if(!data){
      return null
   }
-  console.log(data.profile)
   return (
     <Container>
       <Header>
@@ -125,11 +149,7 @@ const App = () => {
       <Line>
         <Column>
           <ChartHeader>Quantidade de blox por: </ChartHeader>
-          <Chart
-            options={chartData.options}
-            series={chartData.series}
-            type="bar"
-          />
+          {renderGraph(data.stacked, "bar")}
         </Column>
       </Line>
     </Container>
